@@ -2,23 +2,29 @@
 
 #include <string>
 
-namespace lib {
-    static std::string random_hex(uint length, bool upper = true) {
+namespace lib
+{
+    static std::string random_hex(uint length, bool upper = true)
+    {
         std::string str = "0123456789abcdef";
-        if (upper) {
+        if (upper)
+        {
             str = "0123456789ABCDEF";
         }
         std::string new_str;
-        for (uint i = 0; i < length; i++) {
+        for (uint i = 0; i < length; i++)
+        {
             new_str += str[rand() % str.length()];
         }
 
         return new_str;
     }
 
-    static std::string random_mac_address() {
+    static std::string random_mac_address()
+    {
         std::string mac = random_hex(2, false);
-        for (uint i = 0; i < 5; i++) {
+        for (uint i = 0; i < 5; i++)
+        {
             mac += ":" + random_hex(2, false);
         }
         return mac;

@@ -10,7 +10,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/spdlog)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/enet-socks5/enet)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/magic_enum)
 
-add_executable(Echo main.cpp lib/connect/connect.cpp lib/manager/manager.cpp
+add_executable(Echo main.cpp lib/connect/connect.cpp lib/manager/manager.cpp lib/bot/bot.cpp
         lib/utils/hash.hpp
         lib/utils/random.hpp
         lib/utils/proton.hpp)
