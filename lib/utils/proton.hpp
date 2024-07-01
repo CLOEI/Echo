@@ -4,7 +4,7 @@
 #include <array>
 #include "hash.hpp"
 
-namespace lib::proton
+namespace utils::proton
 {
     std::string generate_klv(const int protocol, const std::string &version, const std::string &rid)
     {

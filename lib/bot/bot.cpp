@@ -1,6 +1,24 @@
 #include "bot.hpp"
 #include <enet/enet.h>
 #include <iostream>
+#include "utils/random.hpp"
+#include "packet/packet.hpp"
+
+void lib::Bot::spoof()
+{
+  this->login_info.mac = random_mac_address();
+  this->login_info.rid = random_hex(32);
+  this->login_info.wk = random_hex(32);
+}
+
+void lib::Bot::send_packet(packet::ePacketType packet_type, std::string data)
+{
+  ENetPacket *packet = enet_packet_create(nullptr, sizeof(packet::ePacketType) + data.length(), ENET_PACKET_FLAG_RELIABLE);
+  *(packet::ePacketType *)packet->data = packet_type;
+  memcpy(packet->data + sizeof(packet::ePacketType), data.c_str(), data.length());
+
+  enet_peer_send(enet_peer, 0, packet);
+}
 
 void lib::Bot::event()
 {
@@ -13,13 +31,18 @@ void lib::Bot::event()
       switch (event.type)
       {
       case ENET_EVENT_TYPE_CONNECT:
-        logger->info("Packet type: HELLO");
+        logger->info("Connected to the server");
         break;
       case ENET_EVENT_TYPE_RECEIVE:
+      {
+        lib::packet::Packet pkt(this, &event);
+        logger->info("Received {} packet", pkt.name);
+        pkt.handle();
         enet_packet_destroy(event.packet);
         break;
+      }
       case ENET_EVENT_TYPE_DISCONNECT:
-        logger->info("{0} disconnected.", event.peer->address.host);
+        logger->error("Disconnected from server");
         start();
         break;
       }

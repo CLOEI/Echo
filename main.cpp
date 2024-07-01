@@ -5,6 +5,6 @@
 int main()
 {
     lib::Manager manager{};
-    manager.add_bot("username", "password");
+    manager.add_bot("Badjoy", "password");
     return 0;
 }

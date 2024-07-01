@@ -3,6 +3,7 @@
 #include "connect/connect.hpp"
 #include "logininfo.hpp"
 #include <spdlog/spdlog.h>
+#include "packet/packetStruct.hpp"
 
 namespace lib
 {
@@ -11,15 +12,19 @@ namespace lib
   public:
     Bot(std::shared_ptr<spdlog::logger> logger, std::string *username, std::string *password) : Connect(logger)
     {
+      this->login_info.requestedName = *username;
       this->logger = logger;
+      spoof();
       start();
       event();
     }
     void event();
+    void spoof();
+    void send_packet(packet::ePacketType packet_type, std::string data);
 
   public:
     bool is_running = false;
-    std::shared_ptr<LoginInfo> login_info;
+    LoginInfo login_info{};
     std::shared_ptr<spdlog::logger> logger;
   };
 }

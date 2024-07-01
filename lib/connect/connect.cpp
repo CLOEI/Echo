@@ -21,7 +21,8 @@ void lib::Connect::HTTP()
     }
     else
     {
-        logger->error("Failed to connect to server");
+        logger->error("Failed to parse data from server, re-parsing...");
+        HTTP();
         return;
     }
 }

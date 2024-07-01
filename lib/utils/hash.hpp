@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <openssl/evp.h>
 
-namespace lib::hash
+namespace utils::hash
 {
     std::string sha256(const std::string &input)
     {
