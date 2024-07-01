@@ -2,8 +2,10 @@
 
 #include <string>
 
-namespace lib {
-  struct LoginInfo {
+namespace lib
+{
+  struct LoginInfo
+  {
     std::string requestedName;
     int f = 1;
     int protocol = 208;
@@ -13,14 +15,14 @@ namespace lib {
     int cbits = 1024;
     int player_age = 20;
     int GDPR = 1;
-    std::string category= "_-5100";
+    std::string category = "_-5100";
     int totalPlaytime = 0;
     std::string klv;
     int hash2;
     std::string meta;
     int fhash;
     std::string rid;
-    std::string platformID = "0,1,1"; 
+    std::string platformID = "0,1,1";
     int deviceVersion = 0;
     std::string country = "us";
     int hash;

@@ -3,6 +3,6 @@
 #include <iostream>
 
 int main() {
-  lib::Manager manager{};
-  return 0;
+    lib::Manager manager{};
+    return 0;
 }
