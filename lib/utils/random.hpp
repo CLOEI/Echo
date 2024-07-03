@@ -4,7 +4,7 @@
 
 namespace lib
 {
-    static std::string random_hex(uint length, bool upper = true)
+    static std::string random_hex(uint32_t length, bool upper = true)
     {
         std::string str = "0123456789abcdef";
         if (upper)
@@ -12,7 +12,7 @@ namespace lib
             str = "0123456789ABCDEF";
         }
         std::string new_str;
-        for (uint i = 0; i < length; i++)
+        for (uint32_t i = 0; i < length; i++)
         {
             new_str += str[rand() % str.length()];
         }
@@ -23,7 +23,7 @@ namespace lib
     static std::string random_mac_address()
     {
         std::string mac = random_hex(2, false);
-        for (uint i = 0; i < 5; i++)
+        for (uint32_t i = 0; i < 5; i++)
         {
             mac += ":" + random_hex(2, false);
         }

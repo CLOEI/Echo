@@ -10,9 +10,14 @@ namespace lib
   class Bot : public Connect
   {
   public:
-    Bot(std::shared_ptr<spdlog::logger> logger, std::string *username, std::string *password) : Connect(logger)
+    Bot(std::shared_ptr<spdlog::logger> logger, std::string username, std::string password = "") : Connect(logger)
     {
-      this->login_info.requestedName = *username;
+      if (password != "")
+      {
+        this->login_info.tankIDName = username;
+        this->login_info.tankIDPass = password;
+      }
+      this->login_info.requestedName = username;
       this->logger = logger;
       spoof();
       start();

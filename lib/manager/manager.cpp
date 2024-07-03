@@ -8,7 +8,7 @@ void lib::Manager::add_bot(std::string username, std::string password)
   this->logger = spdlog::stdout_color_mt(username);
   logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] %v");
   spdlog::info("Adding bot with username: {}", username);
-  bots.insert_or_assign(username, std::make_shared<Bot>(logger, &username, &password));
+  bots.insert_or_assign(username, std::make_shared<Bot>(logger, username, password));
 }
 
 void lib::Manager::remove_bot(std::string username)

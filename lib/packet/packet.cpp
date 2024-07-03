@@ -38,7 +38,7 @@ void lib::packet::Packet::handle_hello()
   data.add("hash2", this->bot->login_info.hash2);
   this->bot->login_info.meta = this->bot->parsed_server_data["meta"];
   data.add("meta", this->bot->login_info.meta);
-  // data.add("fhash", this->bot->login_info->fhash);
+  data.add("fhash", this->bot->login_info.fhash);
   data.add("rid", this->bot->login_info.rid);
   data.add("platformID", this->bot->login_info.platformID);
   data.add("deviceVersion", this->bot->login_info.deviceVersion);
@@ -48,6 +48,12 @@ void lib::packet::Packet::handle_hello()
   data.add("mac", this->bot->login_info.mac);
   data.add("wk", this->bot->login_info.wk);
   data.add("zf", this->bot->login_info.zf);
+
+  if (this->bot->login_info.tankIDName != "")
+  {
+    data.add("tankIDName", this->bot->login_info.tankIDName);
+    data.add("tankIDPass", this->bot->login_info.tankIDPass);
+  }
 
   bot->send_packet(NET_MESSAGE_GENERIC, data.Text);
 }
