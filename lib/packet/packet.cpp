@@ -16,6 +16,7 @@ lib::packet::Packet::Packet(Bot *bot, ENetEvent *event)
 
   this->type = *(int32_t *)event->packet->data;
   this->data = event->packet->data + 4;
+  this->data[event->packet->dataLength - 4] = 0;
   this->name = magic_enum::enum_name(magic_enum::enum_value<lib::packet::ePacketType>(type));
 }
 
@@ -55,7 +56,7 @@ void lib::packet::Packet::handle_hello()
     data.add("tankIDPass", this->bot->login_info.tankIDPass);
   }
 
-  bot->send_packet(NET_MESSAGE_GENERIC, data.Text);
+  bot->send_packet(NET_MESSAGE_GENERIC, data.Text + "\n");
 }
 
 void lib::packet::Packet::handle_game_message()
@@ -75,6 +76,11 @@ void lib::packet::Packet::handle_game_event()
   std::cout << "Data received: " << (char *)data << std::endl;
 }
 
+void lib::packet::Packet::handle_game_tank()
+{
+  std::cout << "Data received: " << data << std::endl;
+}
+
 void lib::packet::Packet::handle()
 {
   switch (type)
@@ -87,6 +93,9 @@ void lib::packet::Packet::handle()
     break;
   case NET_MESSAGE_GAME_EVENT:
     handle_game_event();
+    break;
+  case NET_MESSAGE_GAME_TANK:
+    handle_game_tank();
     break;
   default:
     break;
