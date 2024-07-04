@@ -13,17 +13,20 @@ void lib::Connect::start()
 
 void lib::Connect::HTTP()
 {
-    cpr::Response r = cpr::Post(url, cpr::Header{{"User-Agent", "UbiServices_SDK_2022.Release.9_PC64_ansi_static"},
-                                                 {"Content-Type", "application/x-www-form-urlencoded"}});
-    if (r.status_code == 200)
+    bool success = false;
+    while (!success)
     {
-        parse_server_data(r.text);
-    }
-    else
-    {
-        logger->error("Failed to parse data from server, re-parsing...");
-        HTTP();
-        return;
+        cpr::Response r = cpr::Post(url, cpr::Header{{"User-Agent", "UbiServices_SDK_2022.Release.9_PC64_ansi_static"},
+                                                     {"Content-Type", "application/x-www-form-urlencoded"}});
+        if (r.status_code == 200)
+        {
+            parse_server_data(r.text);
+            success = true;
+        }
+        else
+        {
+            logger->error("Failed to parse data from server, re-parsing...");
+        }
     }
 }
 
@@ -38,7 +41,7 @@ void lib::Connect::ENET()
     if (parsed_server_data.find("maint") != parsed_server_data.end())
     {
         logger->error("Server is under maintenance");
-        return;
+        exit(0);
     }
 
     ENetAddress address;

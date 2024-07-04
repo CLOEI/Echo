@@ -3,6 +3,7 @@
 #include "utils/textparse.hpp"
 #include "utils/proton.hpp"
 #include "utils/random.hpp"
+#include "utils/variant.hpp"
 #include <magic_enum.hpp>
 #include <iostream>
 
@@ -24,6 +25,16 @@ lib::packet::Packet::Packet(Bot *bot, ENetEvent *event)
     this->tankPacket = std::make_shared<TankPacketType>();
     memcpy(this->tankPacket.get(), this->data, sizeof(TankPacketType));
   }
+}
+
+lib::packet::Packet::~Packet()
+{
+  if (this->tankPacket)
+  {
+    this->tankPacket.reset();
+  }
+
+  this->bot = nullptr;
 }
 
 void lib::packet::Packet::handle_hello()
@@ -72,7 +83,7 @@ void lib::packet::Packet::handle_game_message()
 
   if (strstr(text, "action|logon_fail"))
   {
-    bot->start();
+    this->bot->start();
     return;
   }
 }
@@ -84,7 +95,12 @@ void lib::packet::Packet::handle_game_event()
 
 void lib::packet::Packet::handle_game_tank()
 {
-  std::cout << "Data received: " << magic_enum::enum_name(magic_enum::enum_value<eTankPacketType>(tankPacket->type)) << std::endl;
+  utils::proton::variantlist_t variant;
+  variant.serialize_from_mem(this->data + sizeof(eTankPacketType));
+  std::string function = variant[0].get_string();
+  std::cout
+      << "Data received: " << magic_enum::enum_name(magic_enum::enum_value<eTankPacketType>(tankPacket->type)) << std::endl;
+  std::cout << "Function: " << function << std::endl;
 }
 
 void lib::packet::Packet::handle()

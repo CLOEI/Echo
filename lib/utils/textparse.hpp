@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace utils
+namespace lib::utils
 {
   class TextParse
   {

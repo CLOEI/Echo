@@ -9,6 +9,7 @@ namespace lib::packet
   {
   public:
     Packet(Bot *bot, ENetEvent *event);
+    ~Packet();
     void handle();
 
   private:
