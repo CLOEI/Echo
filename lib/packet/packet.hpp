@@ -24,5 +24,6 @@ namespace lib::packet
   public:
     Bot *bot;
     std::string name;
+    std::shared_ptr<TankPacketType> tankPacket;
   };
 }

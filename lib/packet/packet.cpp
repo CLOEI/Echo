@@ -17,7 +17,13 @@ lib::packet::Packet::Packet(Bot *bot, ENetEvent *event)
   this->type = *(int32_t *)event->packet->data;
   this->data = event->packet->data + 4;
   this->data[event->packet->dataLength - 4] = 0;
-  this->name = magic_enum::enum_name(magic_enum::enum_value<lib::packet::ePacketType>(type));
+  this->name = magic_enum::enum_name(magic_enum::enum_value<ePacketType>(type));
+
+  if (type == NET_MESSAGE_GAME_TANK)
+  {
+    this->tankPacket = std::make_shared<TankPacketType>();
+    memcpy(this->tankPacket.get(), this->data, sizeof(TankPacketType));
+  }
 }
 
 void lib::packet::Packet::handle_hello()
@@ -78,7 +84,7 @@ void lib::packet::Packet::handle_game_event()
 
 void lib::packet::Packet::handle_game_tank()
 {
-  std::cout << "Data received: " << data << std::endl;
+  std::cout << "Data received: " << magic_enum::enum_name(magic_enum::enum_value<eTankPacketType>(tankPacket->type)) << std::endl;
 }
 
 void lib::packet::Packet::handle()
