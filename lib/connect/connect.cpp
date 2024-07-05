@@ -44,16 +44,6 @@ void lib::Connect::ENET()
         exit(0);
     }
 
-    ENetAddress address;
-    if (enet_address_set_host_ip(&address, parsed_server_data["server"].c_str()) != 0)
-    {
-        logger->error("Failed to set host ip, restarting...");
-        start();
-
-        return;
-    }
-    address.port = std::stoi(parsed_server_data["port"]);
-
     enet_client = enet_host_create(NULL, 1, 2, 0, 0);
     if (enet_client == nullptr)
     {
@@ -64,6 +54,18 @@ void lib::Connect::ENET()
     enet_client->checksum = enet_crc32;
     enet_host_compress_with_range_coder(enet_client);
     logger->info("Connecting to {}:{}", parsed_server_data["server"], parsed_server_data["port"]);
+    ENET_connect(parsed_server_data["server"], parsed_server_data["port"]);
+}
+
+void lib::Connect::ENET_connect(std::string ip, std::string port)
+{
+    ENetAddress address;
+    if (enet_address_set_host_ip(&address, ip.c_str()) != 0)
+    {
+        logger->error("Failed to set host ip, restarting...");
+        start();
+    }
+    address.port = std::stoi(port);
     enet_peer = enet_host_connect(enet_client, &address, 2, 0);
     if (enet_peer == nullptr)
     {

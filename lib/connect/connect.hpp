@@ -20,6 +20,7 @@ namespace lib
         void ENET();
 
         void start();
+        void ENET_connect(std::string ip, std::string port);
 
     private:
         void parse_server_data(std::string data);

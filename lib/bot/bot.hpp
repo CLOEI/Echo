@@ -7,6 +7,15 @@
 
 namespace lib
 {
+  struct SubServer
+  {
+    std::string ip;
+    std::string port;
+    std::string token;
+    std::string user_id;
+    std::string door_id;
+    std::string UUID;
+  };
   class Bot : public Connect
   {
   public:
@@ -26,9 +35,14 @@ namespace lib
     void event();
     void spoof();
     void send_packet(packet::ePacketType packet_type, std::string data);
+    void disconnect();
 
   public:
     bool is_running = false;
+    bool is_subserver_redirect = false;
+    bool is_ingame = false;
+    uint8_t subserver_disconnect_retries = 0;
+    SubServer subserver{};
     LoginInfo login_info{};
     std::shared_ptr<spdlog::logger> logger;
   };

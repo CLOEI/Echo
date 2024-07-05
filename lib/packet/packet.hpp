@@ -17,6 +17,7 @@ namespace lib::packet
     void handle_game_message();
     void handle_game_event();
     void handle_game_tank();
+    void handle_game_client_log_request();
 
   private:
     uint32_t type;

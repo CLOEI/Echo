@@ -39,6 +39,7 @@ lib::packet::Packet::~Packet()
 
 void lib::packet::Packet::handle_hello()
 {
+  this->bot->subserver_disconnect_retries = 0;
   utils::TextParse data(fmt::format("requestedName|", this->bot->login_info.requestedName));
   data.add("f", this->bot->login_info.f);
   data.add("protocol", this->bot->login_info.protocol);
@@ -67,6 +68,15 @@ void lib::packet::Packet::handle_hello()
   data.add("wk", this->bot->login_info.wk);
   data.add("zf", this->bot->login_info.zf);
 
+  if (this->bot->is_subserver_redirect)
+  {
+    data.add("user", this->bot->subserver.user_id);
+    data.add("token", this->bot->subserver.token);
+    data.add("doorID", this->bot->subserver.door_id);
+    data.add("UUIDToken", this->bot->subserver.UUID);
+    data.add("lmode", "1");
+  }
+
   if (this->bot->login_info.tankIDName != "")
   {
     data.add("tankIDName", this->bot->login_info.tankIDName);
@@ -86,6 +96,11 @@ void lib::packet::Packet::handle_game_message()
     this->bot->start();
     return;
   }
+  if (strstr(text, "requesting that you re-logon"))
+  {
+    this->bot->start();
+    return;
+  }
 }
 
 void lib::packet::Packet::handle_game_event()
@@ -95,12 +110,47 @@ void lib::packet::Packet::handle_game_event()
 
 void lib::packet::Packet::handle_game_tank()
 {
-  utils::proton::variantlist_t variant;
-  variant.serialize_from_mem(this->data + sizeof(eTankPacketType));
-  std::string function = variant[0].get_string();
   std::cout
       << "Data received: " << magic_enum::enum_name(magic_enum::enum_value<eTankPacketType>(tankPacket->type)) << std::endl;
+  utils::proton::variantlist_t variant;
+  variant.serialize_from_mem(this->data + sizeof(TankPacketType));
+  std::string function = variant[0].get_string();
+
   std::cout << "Function: " << function << std::endl;
+
+  if (function == "OnSendToServer")
+  {
+    if (bot->is_ingame)
+    {
+      std::cout << "Already in game" << std::endl;
+    }
+    std::string port = std::to_string(variant[1].get_int32());
+    std::string token = std::to_string(variant[2].get_int32());
+    std::string user_id = std::to_string(variant[3].get_int32());
+    std::string var5 = variant[4].get_string();
+    std::vector<std::string> data = utils::TextParse::vectorize(var5);
+
+    bot->is_subserver_redirect = true;
+    std::istringstream varStream(var5);
+    bot->subserver.ip = data[0];
+    bot->subserver.door_id = data[1];
+    bot->subserver.UUID = data[2];
+    bot->subserver.port = port;
+    bot->subserver.token = token;
+    bot->subserver.user_id = user_id;
+    bot->disconnect();
+  }
+
+  if (function == "OnSuperMainStartAcceptLogonHrdxs47254722215a")
+  {
+    bot->is_ingame = true;
+    bot->send_packet(NET_MESSAGE_GENERIC, "action|enter_game\n");
+  }
+}
+
+void lib::packet::Packet::handle_game_client_log_request()
+{
+  std::cout << "Data received: " << (char *)data << std::endl;
 }
 
 void lib::packet::Packet::handle()
@@ -118,6 +168,9 @@ void lib::packet::Packet::handle()
     break;
   case NET_MESSAGE_GAME_TANK:
     handle_game_tank();
+    break;
+  case NET_MESSAGE_CLIENT_LOG_REQUEST:
+    handle_game_client_log_request();
     break;
   default:
     break;

@@ -20,13 +20,19 @@ void lib::Bot::send_packet(packet::ePacketType packet_type, std::string data)
   enet_peer_send(enet_peer, 0, packet);
 }
 
+void lib::Bot::disconnect()
+{
+  std::cout << "Disconnecting..." << std::endl;
+  enet_peer_disconnect(enet_peer, 0);
+}
+
 void lib::Bot::event()
 {
   ENetEvent event;
   this->is_running = true;
   while (is_running)
   {
-    while (enet_host_service(enet_client, &event, 1000) > 0)
+    while (enet_host_service(enet_client, &event, 100) > 0)
     {
       switch (event.type)
       {
@@ -42,9 +48,27 @@ void lib::Bot::event()
         break;
       }
       case ENET_EVENT_TYPE_DISCONNECT:
-        logger->error("Disconnected from server");
-        start();
-        break;
+        if (is_subserver_redirect)
+        {
+          if (subserver_disconnect_retries < 2)
+          {
+            logger->warn("Disconnected, reconnecting to subserver {}:{}...", subserver.ip, subserver.port);
+            subserver_disconnect_retries++;
+            ENET_connect(subserver.ip, subserver.port);
+          }
+          else
+          {
+            is_subserver_redirect = false;
+            subserver_disconnect_retries = 0;
+            logger->error("Can't connect to subserver. disconnected, reconnecting to server...");
+            start();
+          }
+        }
+        else
+        {
+          logger->error("Disconnected, reconnecting to server...");
+          start();
+        }
       }
     }
   }
