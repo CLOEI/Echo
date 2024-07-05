@@ -93,12 +93,13 @@ void lib::packet::Packet::handle_game_message()
 
   if (strstr(text, "action|logon_fail"))
   {
-    this->bot->start();
+    this->bot->disconnect();
     return;
   }
   if (strstr(text, "requesting that you re-logon"))
   {
-    this->bot->start();
+    this->bot->is_subserver_redirect = false;
+    this->bot->disconnect();
     return;
   }
 }
@@ -110,20 +111,37 @@ void lib::packet::Packet::handle_game_event()
 
 void lib::packet::Packet::handle_game_tank()
 {
-  std::cout
-      << "Data received: " << magic_enum::enum_name(magic_enum::enum_value<eTankPacketType>(tankPacket->type)) << std::endl;
+  auto tankPacketType = magic_enum::enum_name(magic_enum::enum_value<eTankPacketType>(tankPacket->type));
+  std::cout << "Data received: " << tankPacketType << std::endl;
   utils::proton::variantlist_t variant;
   variant.serialize_from_mem(this->data + sizeof(TankPacketType));
   std::string function = variant[0].get_string();
 
   std::cout << "Function: " << function << std::endl;
 
+  if (tankPacketType == "NET_GAME_PACKET_PING_REQUEST")
+  {
+    TankPacketType packet{};
+    packet.type = NET_GAME_PACKET_PING_REPLY;
+    packet.netID = 0;
+    packet.unk2 = 0;
+    packet.unk8 = 64.f;
+    packet.unk9 = 64.f;
+    packet.unk10 = 1000.f;
+    packet.unk11 = 250.f;
+
+    ENetPacket *enet_packet = enet_packet_create(nullptr, sizeof(ePacketType) + sizeof(TankPacketType) + tankPacket.get()->extended_data_length, ENET_PACKET_FLAG_RELIABLE);
+    *(ePacketType *)enet_packet->data = NET_MESSAGE_GAME_TANK;
+    memcpy(enet_packet->data + sizeof(ePacketType), &packet, sizeof(TankPacketType));
+    memcpy(enet_packet->data + sizeof(ePacketType) + sizeof(TankPacketType), data + sizeof(ePacketType) + sizeof(TankPacketType), tankPacket.get()->extended_data_length);
+    if (enet_peer_send(bot->enet_peer, 0, enet_packet) < 0)
+    {
+      std::cout << "Failed to send packet" << std::endl;
+    }
+  }
+
   if (function == "OnSendToServer")
   {
-    if (bot->is_ingame)
-    {
-      std::cout << "Already in game" << std::endl;
-    }
     std::string port = std::to_string(variant[1].get_int32());
     std::string token = std::to_string(variant[2].get_int32());
     std::string user_id = std::to_string(variant[3].get_int32());

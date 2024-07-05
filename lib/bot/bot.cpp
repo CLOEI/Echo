@@ -44,7 +44,6 @@ void lib::Bot::event()
         lib::packet::Packet pkt(this, &event);
         logger->info("Received {} packet", pkt.name);
         pkt.handle();
-        enet_packet_destroy(event.packet);
         break;
       }
       case ENET_EVENT_TYPE_DISCONNECT:
@@ -70,6 +69,7 @@ void lib::Bot::event()
           start();
         }
       }
+      enet_packet_destroy(event.packet);
     }
   }
 }
