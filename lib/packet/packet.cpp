@@ -9,12 +9,12 @@
 
 lib::packet::Packet::Packet(Bot *bot, ENetEvent *event)
 {
-  this->bot = bot;
   if (event->packet->dataLength < 5)
   {
     return;
   }
 
+  this->bot = bot;
   this->type = *(int32_t *)event->packet->data;
   this->data = event->packet->data + 4;
   this->data[event->packet->dataLength - 4] = 0;
