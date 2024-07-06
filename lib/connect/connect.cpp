@@ -59,6 +59,14 @@ void lib::Connect::ENET()
 
 void lib::Connect::ENET_connect(std::string ip, std::string port)
 {
+    // ENetSocks5Config socks5Config;
+    // socks5Config.address.port = 1080;
+    // if (enet_address_set_host_ip(&socks5Config.address, "127.0.0.1") != 0)
+    // {
+    //     logger->error("Failed to set socks5 address, restarting...");
+    //     start();
+    // }
+
     ENetAddress address;
     if (enet_address_set_host_ip(&address, ip.c_str()) != 0)
     {
@@ -66,6 +74,11 @@ void lib::Connect::ENET_connect(std::string ip, std::string port)
         start();
     }
     address.port = std::stoi(port);
+    // if (enet_host_use_socks5(enet_client, &socks5Config) != 0)
+    // {
+    //     logger->error("Failed to use socks5, restarting...");
+    //     start();
+    // }
     enet_peer = enet_host_connect(enet_client, &address, 2, 0);
     if (enet_peer == nullptr)
     {

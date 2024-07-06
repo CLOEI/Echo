@@ -10,7 +10,7 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/lib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/cpr)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/spdlog)
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/enet-socks5/enet)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/enet)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/magic_enum)
 
 add_executable(Echo main.cpp lib/connect/connect.cpp lib/manager/manager.cpp lib/bot/bot.cpp lib/packet/packet.cpp)

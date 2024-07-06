@@ -106,7 +106,7 @@ void lib::packet::Packet::handle_game_message()
 
 void lib::packet::Packet::handle_game_event()
 {
-  std::cout << "Data received: " << (char *)data << std::endl;
+  std::cout << "Data received: " << std::string((char *)data) << std::endl;
 }
 
 void lib::packet::Packet::handle_game_tank()
