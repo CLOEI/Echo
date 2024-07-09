@@ -32,7 +32,7 @@ void lib::Bot::event()
   this->is_running = true;
   while (is_running)
   {
-    while (enet_host_service(enet_client, &event, 1000) > 0)
+    while (enet_host_service(enet_client, &event, 3000) > 0)
     {
       switch (event.type)
       {

@@ -11,7 +11,7 @@ namespace lib
         std::string requestedName;
         std::string f = "1";
         std::string protocol = "208";
-        std::string game_version = "4.59";
+        std::string game_version = "4.61";
         std::string fz = "41750040";
         std::string lmode = "0";
         std::string cbits = "1024";

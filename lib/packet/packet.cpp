@@ -17,7 +17,7 @@ lib::packet::Packet::Packet(Bot *bot, ENetEvent *event)
   this->bot = bot;
   this->type = *(int32_t *)event->packet->data;
   this->data = event->packet->data + 4;
-  this->data[event->packet->dataLength - 4] = 0;
+  // this->data[event->packet->dataLength - 4] = 0;
   this->name = magic_enum::enum_name(magic_enum::enum_value<ePacketType>(type));
 
   if (type == NET_MESSAGE_GAME_TANK)
@@ -116,8 +116,16 @@ void lib::packet::Packet::handle_game_tank()
   utils::proton::variantlist_t variant;
   variant.serialize_from_mem(this->data + sizeof(TankPacketType));
   std::string function = variant[0].get_string();
+  std::string v2 = std::to_string(variant[1].get_int32());
+  std::string v3 = std::to_string(variant[2].get_int32());
+  std::string v4 = std::to_string(variant[3].get_int32());
+  std::string v5 = variant[4].get_string();
 
   std::cout << "Function: " << function << std::endl;
+  std::cout << "v2: " << v2 << std::endl;
+  std::cout << "v3: " << v3 << std::endl;
+  std::cout << "v4: " << v4 << std::endl;
+  std::cout << "v5: " << v5 << std::endl;
 
   if (tankPacketType == "NET_GAME_PACKET_PING_REQUEST")
   {
